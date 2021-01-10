@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.felipesantacruz.productmanager.dto.WriteProductDTO;
 import com.felipesantacruz.productmanager.dto.ProductDTO;
+import com.felipesantacruz.productmanager.dto.WriteProductDTO;
 import com.felipesantacruz.productmanager.dto.converter.ProductDTOConverter;
+import com.felipesantacruz.productmanager.dto.validator.WriteProductDTOValidator;
+import com.felipesantacruz.productmanager.error.ProductNotFoundException;
+import com.felipesantacruz.productmanager.error.WriterProductDTONotValidException;
 import com.felipesantacruz.productmanager.model.Product;
 import com.felipesantacruz.productmanager.repo.ProductRepository;
 
@@ -29,6 +32,7 @@ public class ProductController
 {
 	private final ProductRepository productRepository;
 	private final ProductDTOConverter productDTOConverter;
+	private final WriteProductDTOValidator writeProductDTOValidato;
 	
 	@GetMapping("/product")
 	public List<ProductDTO> fetchAll()
@@ -41,31 +45,39 @@ public class ProductController
 	}
 	
 	@GetMapping("/product/{id}")
-	public ResponseEntity<Product> findById(@PathVariable Long id)
+	public Product findById(@PathVariable Long id)
 	{
-		// This is like sending an OK if product was found and 404 otherwise
-		return ResponseEntity.of(productRepository.findById(id));
+		return productRepository.findById(id)
+				.orElseThrow(() -> new ProductNotFoundException(id));
 	}
 	
 	@PostMapping("/product")
 	public ResponseEntity<Product> create(@RequestBody WriteProductDTO newProduct)
 	{
+		throwBadRequestIfDTOIsNotValid(newProduct);
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(productRepository.save(productDTOConverter.convertFromDTO(newProduct)));
 	}
+
+	private void throwBadRequestIfDTOIsNotValid(WriteProductDTO newProduct)
+	{
+		if (!writeProductDTOValidato.isValid(newProduct))
+			throw new WriterProductDTONotValidException();
+	}
 	
 	@PutMapping("/product/{id}")
-	public ResponseEntity<Product> edit(@RequestBody WriteProductDTO editedProduct, @PathVariable Long id)
+	public Product edit(@RequestBody WriteProductDTO editedProduct, @PathVariable Long id)
 	{
+		throwBadRequestIfDTOIsNotValid(editedProduct);
 		Product productEdit = productDTOConverter.convertFromDTO(editedProduct);
 		return productRepository.findById(id).map(p -> 
 		{
 			p.setName(productEdit.getName());
 			p.setPrice(productEdit.getPrice());
 			p.setCategory(productEdit.getCategory());
-			return ResponseEntity.ok(productRepository.save(p));
-		}).orElseGet(() -> ResponseEntity.notFound().build());
+			return productRepository.save(p);
+		}).orElseThrow(() -> new ProductNotFoundException(id));
 	}
 	
 	@DeleteMapping("/product/{id}")
@@ -74,6 +86,6 @@ public class ProductController
 		return productRepository.findById(id).map(p -> {
 			productRepository.delete(p);
 			return ResponseEntity.noContent().build();
-		}).orElse(ResponseEntity.notFound().build());
+		}).orElseThrow(() -> new ProductNotFoundException(id));
 	}
 }
