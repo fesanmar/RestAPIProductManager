@@ -1,4 +1,4 @@
-package com.felipesantacruz.productmanager.dto;
+package com.felipesantacruz.productmanager.dto.product;
 
 import lombok.Getter;
 import lombok.Setter;

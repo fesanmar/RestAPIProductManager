@@ -2,7 +2,7 @@ package com.felipesantacruz.productmanager.dto.validator;
 
 import org.springframework.stereotype.Service;
 
-import com.felipesantacruz.productmanager.dto.WriteProductDTO;
+import com.felipesantacruz.productmanager.dto.product.WriteProductDTO;
 import com.felipesantacruz.productmanager.repo.CategoryRespository;
 
 import lombok.RequiredArgsConstructor;

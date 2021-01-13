@@ -3,8 +3,8 @@ package com.felipesantacruz.productmanager.dto.converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import com.felipesantacruz.productmanager.dto.WriteProductDTO;
-import com.felipesantacruz.productmanager.dto.ProductDTO;
+import com.felipesantacruz.productmanager.dto.product.ProductDTO;
+import com.felipesantacruz.productmanager.dto.product.WriteProductDTO;
 import com.felipesantacruz.productmanager.model.Product;
 import com.felipesantacruz.productmanager.repo.CategoryRespository;
 
