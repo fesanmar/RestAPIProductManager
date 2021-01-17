@@ -1,29 +1,41 @@
 package com.felipesantacruz.productmanager.error;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.fasterxml.jackson.databind.JsonMappingException;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
-public class GlobalControllerAdvice
+public class GlobalControllerAdvice extends ResponseEntityExceptionHandler
 {
+	@Override
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
+			HttpStatus status, WebRequest request)
+	{
+		APIError apiError = new APIError(status, ex.getMessage());
+		return ResponseEntity
+				.status(status)
+				.headers(headers)
+				.body(apiError);
+	}
+	
 	@ExceptionHandler(ItemNotFoundException.class)
 	public ResponseEntity<APIError> handleItemNotFount(ItemNotFoundException e)
 	{
 		return createAccurateResponse(e, HttpStatus.NOT_FOUND);
 	}
 
-	@ExceptionHandler({ JsonMappingException.class, WriteDataNotValidException.class })
-	public ResponseEntity<APIError> handleJsonMappingException(RuntimeException e)
+	@ExceptionHandler(WriteDataNotValidException.class)
+	public ResponseEntity<APIError> handleDataNotValidException(WriteDataNotValidException e)
 	{
 		return createAccurateResponse(e, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(DatabaseConstraintViolationException.class)
-	ResponseEntity<APIError> handleDBContraintViolation(DatabaseConstraintViolationException e)
+	public ResponseEntity<APIError> handleDBContraintViolation(DatabaseConstraintViolationException e)
 	{
 		return createAccurateResponse(e, HttpStatus.CONFLICT);
 	}
