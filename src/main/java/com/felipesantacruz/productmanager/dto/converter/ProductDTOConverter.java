@@ -27,6 +27,7 @@ public class ProductDTOConverter
 		return Product.builder()
 				.name(dto.getName())
 				.price(dto.getPrice())
+				.image(dto.getImage())
 				.category(categoryRespository.findById(dto.getCategoryId()).orElse(null))
 				.build();
 	}

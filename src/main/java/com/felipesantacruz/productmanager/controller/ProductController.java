@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.felipesantacruz.productmanager.dto.converter.ProductDTOConverter;
 import com.felipesantacruz.productmanager.dto.product.ProductDTO;
@@ -22,6 +26,7 @@ import com.felipesantacruz.productmanager.error.ProductNotFoundException;
 import com.felipesantacruz.productmanager.error.WriterProductDTONotValidException;
 import com.felipesantacruz.productmanager.model.Product;
 import com.felipesantacruz.productmanager.repo.ProductRepository;
+import com.felipesantacruz.productmanager.upload.StorageService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +37,8 @@ public class ProductController
 {
 	private final ProductRepository productRepository;
 	private final ProductDTOConverter productDTOConverter;
-	private final WriteProductDTOValidator writeProductDTOValidato;
+	private final WriteProductDTOValidator writeProductDTOValidator;
+	private final StorageService storateService;
 	
 	@GetMapping("/product")
 	public List<ProductDTO> fetchAll()
@@ -51,10 +57,22 @@ public class ProductController
 				.orElseThrow(() -> new ProductNotFoundException(id));
 	}
 	
-	@PostMapping("/product")
-	public ResponseEntity<Product> create(@RequestBody WriteProductDTO newProduct)
+	@PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Product> create(@RequestPart("newProduct") WriteProductDTO newProduct,
+			@RequestPart("file") MultipartFile file)
 	{
 		throwBadRequestIfDTOIsNotValid(newProduct);
+		String urlFile = null;
+		if (!file.isEmpty())
+		{
+			String filename = storateService.store(file);
+			urlFile = MvcUriComponentsBuilder
+						.fromMethodName(FilesController.class, "serveFile", filename, null)
+						.build()
+						.toUriString();
+		}
+		
+		newProduct.setImage(urlFile);
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(productRepository.save(productDTOConverter.convertFromDTO(newProduct)));
@@ -62,7 +80,7 @@ public class ProductController
 
 	private void throwBadRequestIfDTOIsNotValid(WriteProductDTO newProduct)
 	{
-		if (!writeProductDTOValidato.isValid(newProduct))
+		if (!writeProductDTOValidator.isValid(newProduct))
 			throw new WriterProductDTONotValidException();
 	}
 	
