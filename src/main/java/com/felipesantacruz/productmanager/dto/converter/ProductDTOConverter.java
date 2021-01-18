@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.felipesantacruz.productmanager.dto.product.ProductDTO;
 import com.felipesantacruz.productmanager.dto.product.WriteProductDTO;
 import com.felipesantacruz.productmanager.model.Product;
+import com.felipesantacruz.productmanager.model.Product.ProductBuilder;
 import com.felipesantacruz.productmanager.repo.CategoryRespository;
 
 import lombok.RequiredArgsConstructor;
@@ -26,11 +27,12 @@ public class ProductDTOConverter
 	
 	public Product convertFromDTO(WriteProductDTO dto)
 	{
-		return Product.builder()
+		ProductBuilder builder =  Product.builder()
 				.name(dto.getName())
 				.price(dto.getPrice())
-				.images(Arrays.asList(dto.getImages()))
-				.category(categoryRespository.findById(dto.getCategoryId()).orElse(null))
-				.build();
+				.category(categoryRespository.findById(dto.getCategoryId()).orElse(null));
+		if(dto.getImages() != null && dto.getImages().length > 0)
+			builder.images(Arrays.asList(dto.getImages()));
+		return builder.build();
 	}
 }

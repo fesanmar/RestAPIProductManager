@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class FilesController
 {
 	private static final Logger logger = LoggerFactory.getLogger(FilesController.class);
+	@Qualifier("fileSystemStorageService")
 	private final StorageService storageService;
 	
 	@GetMapping("/files/{filename:.+}")

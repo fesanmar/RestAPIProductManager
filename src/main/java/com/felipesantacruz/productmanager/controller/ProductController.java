@@ -1,6 +1,5 @@
 package com.felipesantacruz.productmanager.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import com.felipesantacruz.productmanager.dto.converter.ProductDTOConverter;
 import com.felipesantacruz.productmanager.dto.product.ProductDTO;
@@ -39,7 +37,7 @@ public class ProductController
 	private final ProductRepository productRepository;
 	private final ProductDTOConverter productDTOConverter;
 	private final WriteProductDTOValidator writeProductDTOValidator;
-	private final StorageService storateService;
+	private final StorageService storageService;
 	
 	@GetMapping("/product")
 	public List<ProductDTO> fetchAll()
@@ -63,22 +61,7 @@ public class ProductController
 			@RequestPart("file") MultipartFile[] files)
 	{
 		throwBadRequestIfDTOIsNotValid(newProduct);
-		String urlFile = null;
-		List<String> images = new ArrayList<>();
-		for (MultipartFile file : files)
-		{
-			if (!file.isEmpty())
-			{
-				String filename = storateService.store(file);
-				urlFile = MvcUriComponentsBuilder
-						.fromMethodName(FilesController.class, "serveFile", filename, null)
-						.build()
-						.toUriString();
-				images.add(urlFile);
-			}			
-		}
-		
-		newProduct.setImages(images.toArray(new String[images.size()]));
+		newProduct.setImages(storageService.store(files));
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(productRepository.save(productDTOConverter.convertFromDTO(newProduct)));
@@ -108,6 +91,7 @@ public class ProductController
 	public ResponseEntity<?> remove(@PathVariable Long id)
 	{
 		return productRepository.findById(id).map(p -> {
+			p.getImages().stream().forEach(storageService::delete);
 			productRepository.delete(p);
 			return ResponseEntity.noContent().build();
 		}).orElseThrow(() -> new ProductNotFoundException(id));

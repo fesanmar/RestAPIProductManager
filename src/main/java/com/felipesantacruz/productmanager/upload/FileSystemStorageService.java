@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +18,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-@Service
+@Service("fileSystemStorageService")
 public class FileSystemStorageService implements StorageService
 {
 
@@ -27,6 +28,7 @@ public class FileSystemStorageService implements StorageService
 	{
 		this.rootLocation = Paths.get(path);
 	}
+	
 	@Override
 	public void init()
 	{
@@ -76,6 +78,15 @@ public class FileSystemStorageService implements StorageService
 		}
 	}
 
+	@Override
+	public String[] store(MultipartFile[] files)
+	{
+		return Arrays.stream(files)
+				.filter(f -> !f.isEmpty())
+				.map(this::store)
+				.toArray(String[]::new);
+	}
+	
 	@Override
 	public Path load(String filename)
 	{
