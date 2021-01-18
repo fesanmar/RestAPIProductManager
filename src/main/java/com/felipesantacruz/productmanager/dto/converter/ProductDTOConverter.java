@@ -1,5 +1,7 @@
 package com.felipesantacruz.productmanager.dto.converter;
 
+import java.util.Arrays;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +29,7 @@ public class ProductDTOConverter
 		return Product.builder()
 				.name(dto.getName())
 				.price(dto.getPrice())
-				.image(dto.getImage())
+				.images(Arrays.asList(dto.getImages()))
 				.category(categoryRespository.findById(dto.getCategoryId()).orElse(null))
 				.build();
 	}

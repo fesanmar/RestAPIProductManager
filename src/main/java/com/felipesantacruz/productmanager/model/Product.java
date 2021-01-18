@@ -1,5 +1,8 @@
 package com.felipesantacruz.productmanager.model;
 
+import java.util.List;
+
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -22,7 +25,8 @@ public class Product
 
 	private float price;
 	
-	private String image;
+	@ElementCollection
+	private List<String> images;
 	
 	@ManyToOne
 	@JoinColumn(name = "category_id")

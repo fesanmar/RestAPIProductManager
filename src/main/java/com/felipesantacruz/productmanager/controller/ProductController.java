@@ -1,5 +1,6 @@
 package com.felipesantacruz.productmanager.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,20 +60,25 @@ public class ProductController
 	
 	@PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Product> create(@RequestPart("newProduct") WriteProductDTO newProduct,
-			@RequestPart("file") MultipartFile file)
+			@RequestPart("file") MultipartFile[] files)
 	{
 		throwBadRequestIfDTOIsNotValid(newProduct);
 		String urlFile = null;
-		if (!file.isEmpty())
+		List<String> images = new ArrayList<>();
+		for (MultipartFile file : files)
 		{
-			String filename = storateService.store(file);
-			urlFile = MvcUriComponentsBuilder
+			if (!file.isEmpty())
+			{
+				String filename = storateService.store(file);
+				urlFile = MvcUriComponentsBuilder
 						.fromMethodName(FilesController.class, "serveFile", filename, null)
 						.build()
 						.toUriString();
+				images.add(urlFile);
+			}			
 		}
 		
-		newProduct.setImage(urlFile);
+		newProduct.setImages(images.toArray(new String[images.size()]));
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(productRepository.save(productDTOConverter.convertFromDTO(newProduct)));

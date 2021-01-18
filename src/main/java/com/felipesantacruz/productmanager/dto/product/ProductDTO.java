@@ -8,6 +8,6 @@ public class ProductDTO
 {	
 	private String name;
 	private double price;
-	private String image;
+	private String[] images;
 	private String categoryName;
 }
