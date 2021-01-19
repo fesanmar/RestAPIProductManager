@@ -36,4 +36,14 @@ public class Product
 	{
 		images.add(image);
 	}
+	
+	public boolean hasImage(String image)
+	{
+		return images.contains(image);
+	}
+	
+	public void removeImage(String image)
+	{
+		images.remove(image);
+	}
 }

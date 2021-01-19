@@ -2,6 +2,7 @@ package com.felipesantacruz.productmanager.controller;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -73,6 +74,23 @@ public class ProductController
 		{
 			Arrays.stream(storageService.store(files))
 				.forEach(p::addImage);
+			return productRepository.save(p);
+		}).orElseThrow(() -> new ProductNotFoundException(id));
+	}
+	
+	@PatchMapping("/product/{id}/files/remove")
+	public Product removeFiles(@PathVariable Long id, 
+			@RequestParam(name = "files", required = true) String[] files)
+	{
+		return productRepository.findById(id).map(p -> 
+		{
+			Consumer<String> removeImageFromProduct = p::removeImage;
+			Consumer<String> removeImageFromStorage = storageService::delete;
+			Consumer<String> removeImage = removeImageFromProduct.andThen(removeImageFromStorage);
+			
+			Arrays.stream(files)
+				.filter(p::hasImage)
+				.forEach(removeImage);
 			return productRepository.save(p);
 		}).orElseThrow(() -> new ProductNotFoundException(id));
 	}
