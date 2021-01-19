@@ -1,19 +1,20 @@
 package com.felipesantacruz.productmanager.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,15 +57,24 @@ public class ProductController
 				.orElseThrow(() -> new ProductNotFoundException(id));
 	}
 	
-	@PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Product> create(@RequestPart("newProduct") WriteProductDTO newProduct,
-			@RequestPart("file") MultipartFile[] files)
+	@PostMapping("/product")
+	public ResponseEntity<Product> create(@RequestBody WriteProductDTO newProduct)
 	{
 		throwBadRequestIfDTOIsNotValid(newProduct);
-		newProduct.setImages(storageService.store(files));
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(productRepository.save(productDTOConverter.convertFromDTO(newProduct)));
+	}
+	
+	@PatchMapping("/product/{id}/files/add")
+	public Product addFiles(@PathVariable Long id, @RequestParam("file") MultipartFile[] files)
+	{
+		return productRepository.findById(id).map(p -> 
+		{
+			Arrays.stream(storageService.store(files))
+				.forEach(p::addImage);
+			return productRepository.save(p);
+		}).orElseThrow(() -> new ProductNotFoundException(id));
 	}
 
 	private void throwBadRequestIfDTOIsNotValid(WriteProductDTO newProduct)

@@ -8,6 +8,5 @@ public class WriteProductDTO
 {
 	private String name;
 	private float price;
-	private String[] images;
 	private long  categoryId;
 }

@@ -26,7 +26,7 @@ public class AppConfig
 				// registry.addMapping("/**"); Allow any origin
 				registry.addMapping("/api/**")
 					.allowedOrigins("http://localhost:8081")
-					.allowedMethods("GET", "POST", "PUT", "DELETE")
+					.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
 					.maxAge(3600);
 			}
 		};

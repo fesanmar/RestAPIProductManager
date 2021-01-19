@@ -31,4 +31,9 @@ public class Product
 	@ManyToOne
 	@JoinColumn(name = "category_id")
 	private Category category;
+	
+	public void addImage(String image)
+	{
+		images.add(image);
+	}
 }
