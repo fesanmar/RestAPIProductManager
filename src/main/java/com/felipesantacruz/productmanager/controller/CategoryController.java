@@ -1,7 +1,6 @@
 package com.felipesantacruz.productmanager.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +34,9 @@ public class CategoryController
 	private final CategoryDTOConverter dtoConverter;
 
 	@GetMapping("/category")
-	public List<CategoryDTO> fetchAll()
+	public List<Category> fetchAll()
 	{
-		return categoryRespository.findAll().stream().map(dtoConverter::convertToDTO).collect(Collectors.toList());
+		return categoryRespository.findAll();
 	}
 
 	@GetMapping("/category/{id}")
