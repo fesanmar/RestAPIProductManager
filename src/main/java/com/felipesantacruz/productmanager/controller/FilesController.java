@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.felipesantacruz.productmanager.upload.StorageService;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class FilesController
 	@Qualifier("fileSystemStorageService")
 	private final StorageService storageService;
 	
+	@ApiOperation(value = "Get a file by its name", notes = "Provides file resource its name")
 	@GetMapping("/files/{filename:.+}")
 	public ResponseEntity<Resource> serveFile(@PathVariable String filename, HttpServletRequest request)
 	{

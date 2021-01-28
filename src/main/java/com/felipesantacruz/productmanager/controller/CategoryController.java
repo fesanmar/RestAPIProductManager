@@ -22,6 +22,7 @@ import com.felipesantacruz.productmanager.model.Category;
 import com.felipesantacruz.productmanager.repo.CategoryRespository;
 import com.felipesantacruz.productmanager.repo.ProductRepository;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -33,18 +34,21 @@ public class CategoryController
 	private final ProductRepository productRepository;
 	private final CategoryDTOConverter dtoConverter;
 
+	@ApiOperation(value = "Get an all categorys's list", notes = "Provides a list with every category")
 	@GetMapping("/category")
 	public List<Category> fetchAll()
 	{
 		return categoryRespository.findAll();
 	}
 
+	@ApiOperation(value = "Get a category by its ID", notes = "Provides every category's detail by its ID")
 	@GetMapping("/category/{id}")
 	public Category findById(@PathVariable Long id)
 	{
 		return categoryRespository.findById(id).orElseThrow(() -> new CategoryNotFoundException(id));
 	}
 
+	@ApiOperation(value = "Creates a new category", notes = "Creates a new category, stores it, and returns its details")
 	@PostMapping("/category")
 	public ResponseEntity<Category> create(@RequestBody CategoryDTO newCategory)
 	{
@@ -59,6 +63,7 @@ public class CategoryController
 			throw new WriteCategoryNotValidException();
 	}
 
+	@ApiOperation(value = "Updates a category's details", notes = "Edit the category whose ID is passed in the path")
 	@PutMapping("/category/{id}")
 	public Category edit(@PathVariable Long id, @RequestBody CategoryDTO categoryDTO)
 	{
@@ -70,6 +75,7 @@ public class CategoryController
 		}).orElseThrow(WriteCategoryNotValidException::new);
 	}
 
+	@ApiOperation(value = "Removes a category", notes = "Removes the category whose ID is passed in the path. This operation will not be completed if any product is using the category to be removed")
 	@DeleteMapping("/category/{id}")
 	public ResponseEntity<?> remove(@PathVariable Long id)
 	{
