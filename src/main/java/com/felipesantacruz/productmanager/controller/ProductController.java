@@ -1,9 +1,6 @@
 package com.felipesantacruz.productmanager.controller;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.felipesantacruz.productmanager.dto.converter.ProductDTOConverter;
 import com.felipesantacruz.productmanager.dto.product.ProductDTO;
 import com.felipesantacruz.productmanager.dto.product.WriteProductDTO;
 import com.felipesantacruz.productmanager.dto.validator.WriteProductDTOValidator;
@@ -27,8 +23,7 @@ import com.felipesantacruz.productmanager.error.APIError;
 import com.felipesantacruz.productmanager.error.ProductNotFoundException;
 import com.felipesantacruz.productmanager.error.WriterProductDTONotValidException;
 import com.felipesantacruz.productmanager.model.Product;
-import com.felipesantacruz.productmanager.repo.ProductRepository;
-import com.felipesantacruz.productmanager.upload.StorageService;
+import com.felipesantacruz.productmanager.service.AbstractProductService;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -41,20 +36,14 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api")
 public class ProductController
 {
-	private final ProductRepository productRepository;
-	private final ProductDTOConverter productDTOConverter;
+	private final AbstractProductService productService;
 	private final WriteProductDTOValidator writeProductDTOValidator;
-	private final StorageService storageService;
 	
 	@ApiOperation(value = "Get an all products's list", notes = "Provides a list with every products")
 	@GetMapping("/product")
 	public List<ProductDTO> fetchAll()
 	{
-		return productRepository
-				.findAll()
-				.stream()
-				.map(productDTOConverter::convertToDTO)
-				.collect(Collectors.toList());
+		return productService.findAllAsDto();
 	}
 	
 	@ApiOperation(value = "Get a product by its ID", notes = "Provides every product's detail by its ID")
@@ -66,7 +55,7 @@ public class ProductController
 	@GetMapping("/product/{id}")
 	public Product findById(@ApiParam(value = "Product's ID", required = true, type = "long") @PathVariable Long id)
 	{
-		return productRepository.findById(id)
+		return productService.findById(id)
 				.orElseThrow(() -> new ProductNotFoundException(id));
 	}
 	
@@ -77,19 +66,16 @@ public class ProductController
 		throwBadRequestIfDTOIsNotValid(newProduct);
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
-				.body(productRepository.save(productDTOConverter.convertFromDTO(newProduct)));
+				.body(productService.createProduct(newProduct));
 	}
 	
 	@ApiOperation(value = "Attach file to a product", notes = "Attach a file to the product provided by its ID")
 	@PatchMapping("/product/{id}/files/add")
 	public Product addFiles(@PathVariable Long id, @RequestParam("file") MultipartFile[] files)
 	{
-		return productRepository.findById(id).map(p -> 
-		{
-			Arrays.stream(storageService.store(files))
-				.forEach(p::addImage);
-			return productRepository.save(p);
-		}).orElseThrow(() -> new ProductNotFoundException(id));
+		return productService.findById(id)
+				.map(p -> productService.attachFilesToProduct(files, p))
+				.orElseThrow(() -> new ProductNotFoundException(id));
 	}
 	
 	@ApiOperation(value = "Dettach a file from a product", notes = "Dettach a file to the product provided by its ID")
@@ -97,17 +83,9 @@ public class ProductController
 	public Product removeFiles(@PathVariable Long id, 
 			@RequestParam(name = "files", required = true) String[] files)
 	{
-		return productRepository.findById(id).map(p -> 
-		{
-			Consumer<String> removeImageFromProduct = p::removeImage;
-			Consumer<String> removeImageFromStorage = storageService::delete;
-			Consumer<String> removeImage = removeImageFromProduct.andThen(removeImageFromStorage);
-			
-			Arrays.stream(files)
-				.filter(p::hasImage)
-				.forEach(removeImage);
-			return productRepository.save(p);
-		}).orElseThrow(() -> new ProductNotFoundException(id));
+		return productService.findById(id)
+				.map(p -> productService.detachFilesFromProduct(files, p))
+				.orElseThrow(() -> new ProductNotFoundException(id));
 	}
 
 	private void throwBadRequestIfDTOIsNotValid(WriteProductDTO newProduct)
@@ -121,23 +99,16 @@ public class ProductController
 	public Product edit(@RequestBody WriteProductDTO editedProduct, @PathVariable Long id)
 	{
 		throwBadRequestIfDTOIsNotValid(editedProduct);
-		Product productEdit = productDTOConverter.convertFromDTO(editedProduct);
-		return productRepository.findById(id).map(p -> 
-		{
-			p.setName(productEdit.getName());
-			p.setPrice(productEdit.getPrice());
-			p.setCategory(productEdit.getCategory());
-			return productRepository.save(p);
-		}).orElseThrow(() -> new ProductNotFoundException(id));
+		return productService.editProduct(id, editedProduct)
+				.orElseThrow(() -> new ProductNotFoundException(id));
 	}
 	
 	@ApiOperation(value = "Removes a product", notes = "Removes the product whose ID is passed in the path")
 	@DeleteMapping("/product/{id}")
 	public ResponseEntity<?> remove(@PathVariable Long id)
 	{
-		return productRepository.findById(id).map(p -> {
-			p.getImages().stream().forEach(storageService::delete);
-			productRepository.delete(p);
+		return productService.findById(id).map(p -> {
+			productService.delete(p);
 			return ResponseEntity.noContent().build();
 		}).orElseThrow(() -> new ProductNotFoundException(id));
 	}
