@@ -1,7 +1,10 @@
 package com.felipesantacruz.productmanager.controller;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.felipesantacruz.productmanager.dto.product.ProductDTO;
 import com.felipesantacruz.productmanager.dto.product.WriteProductDTO;
@@ -24,6 +28,7 @@ import com.felipesantacruz.productmanager.error.ProductNotFoundException;
 import com.felipesantacruz.productmanager.error.WriterProductDTONotValidException;
 import com.felipesantacruz.productmanager.model.Product;
 import com.felipesantacruz.productmanager.service.AbstractProductService;
+import com.felipesantacruz.productmanager.util.pagination.PaginationLinksUtils;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -38,12 +43,17 @@ public class ProductController
 {
 	private final AbstractProductService productService;
 	private final WriteProductDTOValidator writeProductDTOValidator;
+	private final PaginationLinksUtils paginationLinksUtils;
 	
 	@ApiOperation(value = "Get an all products's list", notes = "Provides a list with every products")
 	@GetMapping("/product")
-	public List<ProductDTO> fetchAll()
+	public ResponseEntity<Page<ProductDTO>> fetchAll(@PageableDefault Pageable pageable, HttpServletRequest request)
 	{
-		return productService.findAllAsDto();
+		Page<ProductDTO> productsPage = productService.findAllAsDto(pageable);
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
+		return ResponseEntity.ok()
+				.header("link", paginationLinksUtils.createLinkHeader(productsPage, uriBuilder))
+				.body(productsPage);
 	}
 	
 	@ApiOperation(value = "Get a product by its ID", notes = "Provides every product's detail by its ID")

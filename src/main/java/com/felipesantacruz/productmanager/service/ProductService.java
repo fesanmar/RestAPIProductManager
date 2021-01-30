@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,6 +53,13 @@ public class ProductService extends AbstractProductService
 				.stream()
 				.map(productDTOConverter::convertToDTO)
 				.collect(Collectors.toList());
+	}
+	
+	@Override
+	public Page<ProductDTO> findAllAsDto(Pageable pageable)
+	{
+		return findAll(pageable)
+				.map(productDTOConverter::convertToDTO);
 	}
 	
 	@Override

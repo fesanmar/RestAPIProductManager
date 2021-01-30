@@ -3,6 +3,8 @@ package com.felipesantacruz.productmanager.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.felipesantacruz.productmanager.dto.product.ProductDTO;
@@ -18,6 +20,8 @@ public abstract class AbstractProductService extends BaseService<Product, Long, 
 	public abstract Optional<Product> editProduct(Long id, WriteProductDTO edit);
 	
 	public abstract List<ProductDTO> findAllAsDto();
+	
+	public abstract Page<ProductDTO> findAllAsDto(Pageable pageable);
 	
 	public abstract Product attachFilesToProduct(MultipartFile[] files, Product p);
 	
