@@ -1,7 +1,10 @@
 package com.felipesantacruz.productmanager.controller;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,12 +15,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.felipesantacruz.productmanager.dto.category.CategoryDTO;
 import com.felipesantacruz.productmanager.error.CategoryNotFoundException;
 import com.felipesantacruz.productmanager.error.WriteCategoryNotValidException;
 import com.felipesantacruz.productmanager.model.Category;
 import com.felipesantacruz.productmanager.service.AbstractCategoryService;
+import com.felipesantacruz.productmanager.util.pagination.PaginationLinksUtils;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +33,16 @@ import lombok.RequiredArgsConstructor;
 public class CategoryController
 {
 	private final AbstractCategoryService categoryService;
+	private final PaginationLinksUtils paginationLinksUtils;
 
 	@ApiOperation(value = "Get an all categorys's list", notes = "Provides a list with every category")
 	@GetMapping("/category")
-	public List<Category> fetchAll()
+	public ResponseEntity<Page<Category>> fetchAll(@PageableDefault Pageable pageable, HttpServletRequest request)
 	{
-		return categoryService.findAll();
+		Page<Category> page = categoryService.findAll(pageable);
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
+		String uris = paginationLinksUtils.createLinkHeader(page, uriBuilder);
+		return ResponseEntity.ok().header("link", uris).body(page);
 	}
 
 	@ApiOperation(value = "Get a category by its ID", notes = "Provides every category's detail by its ID")
