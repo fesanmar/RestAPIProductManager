@@ -1,5 +1,7 @@
 package com.felipesantacruz.productmanager.controller;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.data.domain.Page;
@@ -45,11 +47,16 @@ public class ProductController
 	private final WriteProductDTOValidator writeProductDTOValidator;
 	private final PaginationLinksUtils paginationLinksUtils;
 	
-	@ApiOperation(value = "Get an all products's list", notes = "Provides a list with every products")
+	@ApiOperation(value = "Get an all products's list. A filter can be applied wih the query arg name", 
+			notes = "Provides a list with every products if name query is not setted. Otherwise, returns every product whose name matches with the query value")
 	@GetMapping("/product")
-	public ResponseEntity<Page<ProductDTO>> fetchAll(@PageableDefault Pageable pageable, HttpServletRequest request)
+	public ResponseEntity<Page<ProductDTO>> fetchAll(
+			@RequestParam(name = "name", required = false) Optional<String> name, 
+			@PageableDefault Pageable pageable, HttpServletRequest request)
 	{
-		Page<ProductDTO> productsPage = productService.findAllAsDto(pageable);
+		Page<ProductDTO> productsPage = name
+				.map(n -> productService.findByNameAsDto(n, pageable))
+				.orElse(productService.findAllAsDto(pageable));
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
 		return ResponseEntity.ok()
 				.header("link", paginationLinksUtils.createLinkHeader(productsPage, uriBuilder))

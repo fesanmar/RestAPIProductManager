@@ -63,6 +63,14 @@ public class ProductService extends AbstractProductService
 	}
 	
 	@Override
+	public Page<ProductDTO> findByNameAsDto(String name, Pageable pageable)
+	{
+		return repository
+				.findByNameContainsIgnoreCase(name, pageable)
+				.map(productDTOConverter::convertToDTO);
+	}
+	
+	@Override
 	public Product attachFilesToProduct(MultipartFile[] files, Product p)
 	{
 		Arrays.stream(storageService.store(files)).forEach(p::addImage);
@@ -94,4 +102,5 @@ public class ProductService extends AbstractProductService
 	{
 		return !repository.findByCategory(c).isEmpty();
 	}
+
 }
