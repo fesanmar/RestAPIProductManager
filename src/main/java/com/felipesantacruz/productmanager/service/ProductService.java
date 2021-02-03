@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,11 +64,18 @@ public class ProductService extends AbstractProductService
 	}
 	
 	@Override
-	public Page<ProductDTO> findByNameAsDto(String name, Pageable pageable)
+	public Page<ProductDTO> findByArgsAsDto(Optional<String> name, Optional<Float> price, Pageable pageable)
 	{
-		return repository
-				.findByNameContainsIgnoreCase(name, pageable)
-				.map(productDTOConverter::convertToDTO);
+		Specification<Product> productNameSpec = (root, query, criteriaBuilder) ->
+				name.map(nm -> criteriaBuilder.like(root.get("name"), "%" + nm + "%"))
+				.orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+				
+		Specification<Product> productPriceLowerThanSpec = (root, query, criteriaBuilder) ->
+				price.map(prc -> criteriaBuilder.lessThanOrEqualTo(root.get("price"), prc))
+				.orElseGet(() -> criteriaBuilder.isTrue(criteriaBuilder.literal(true)));
+		
+		Specification<Product> nameAndPriceSpec = productNameSpec.and(productPriceLowerThanSpec);
+		return repository.findAll(nameAndPriceSpec, pageable).map(productDTOConverter::convertToDTO);
 	}
 	
 	@Override
@@ -102,5 +110,6 @@ public class ProductService extends AbstractProductService
 	{
 		return !repository.findByCategory(c).isEmpty();
 	}
+
 
 }

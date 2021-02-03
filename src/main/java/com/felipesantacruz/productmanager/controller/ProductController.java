@@ -48,15 +48,17 @@ public class ProductController
 	private final PaginationLinksUtils paginationLinksUtils;
 	
 	@ApiOperation(value = "Get an all products's list. A filter can be applied wih the query arg name", 
-			notes = "Provides a list with every products if name query is not setted. Otherwise, returns every product whose name matches with the query value")
+			notes = "Provides a list with every products if name and price queries are not setted. \n"
+					+ "name query: Returns every product whose name conatains the name arg (case insensitive)\n"
+					+ "price query: Returns every product whose price is losser or equal to the price arg.\n"
+					+ "Both queries can be combined.")
 	@GetMapping("/product")
-	public ResponseEntity<Page<ProductDTO>> fetchAll(
+	public ResponseEntity<Page<ProductDTO>> fetchAllWithArgs(
 			@RequestParam(name = "name", required = false) Optional<String> name, 
+			@RequestParam(name = "price", required = false) Optional<Float> price,
 			@PageableDefault Pageable pageable, HttpServletRequest request)
 	{
-		Page<ProductDTO> productsPage = name
-				.map(n -> productService.findByNameAsDto(n, pageable))
-				.orElse(productService.findAllAsDto(pageable));
+		Page<ProductDTO> productsPage = productService.findByArgsAsDto(name, price, pageable);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
 		return ResponseEntity.ok()
 				.header("link", paginationLinksUtils.createLinkHeader(productsPage, uriBuilder))

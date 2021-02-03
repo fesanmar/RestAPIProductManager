@@ -23,7 +23,7 @@ public abstract class AbstractProductService extends BaseService<Product, Long, 
 	
 	public abstract Page<ProductDTO> findAllAsDto(Pageable pageable);
 	
-	public abstract Page<ProductDTO> findByNameAsDto(String name, Pageable pageable);
+	public abstract Page<ProductDTO> findByArgsAsDto(final Optional<String> name, final Optional<Float> price, Pageable pageable);
 	
 	public abstract Product attachFilesToProduct(MultipartFile[] files, Product p);
 	
