@@ -47,7 +47,7 @@ public class ProductController
 	private final WriteProductDTOValidator writeProductDTOValidator;
 	private final PaginationLinksUtils paginationLinksUtils;
 	
-	@ApiOperation(value = "Get an all products's list. A filter can be applied wih the query arg name", 
+	@ApiOperation(value = "Get an all products's list. A filter can be applied wih the queries args name and price", 
 			notes = "Provides a list with every products if name and price queries are not setted. \n"
 					+ "name query: Returns every product whose name conatains the name arg (case insensitive)\n"
 					+ "price query: Returns every product whose price is losser or equal to the price arg.\n"
