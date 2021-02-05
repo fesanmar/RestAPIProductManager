@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.felipesantacruz.productmanager.dto.category.CategoryDTO;
+import com.felipesantacruz.productmanager.dto.CategoryDTO;
 import com.felipesantacruz.productmanager.error.CategoryNotFoundException;
 import com.felipesantacruz.productmanager.error.WriteCategoryNotValidException;
 import com.felipesantacruz.productmanager.model.Category;

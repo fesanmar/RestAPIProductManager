@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.felipesantacruz.productmanager.dto.product.ProductDTO;
-import com.felipesantacruz.productmanager.dto.product.WriteProductDTO;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.felipesantacruz.productmanager.dto.ProductDTO;
+import com.felipesantacruz.productmanager.dto.WriteProductDTO;
 import com.felipesantacruz.productmanager.dto.validator.WriteProductDTOValidator;
+import com.felipesantacruz.productmanager.dto.view.ProductViews;
 import com.felipesantacruz.productmanager.error.APIError;
 import com.felipesantacruz.productmanager.error.ProductNotFoundException;
 import com.felipesantacruz.productmanager.error.WriterProductDTONotValidException;
@@ -52,6 +54,7 @@ public class ProductController
 					+ "name query: Returns every product whose name conatains the name arg (case insensitive)\n"
 					+ "price query: Returns every product whose price is losser or equal to the price arg.\n"
 					+ "Both queries can be combined.")
+	@JsonView(ProductViews.DtoWithPrice.class)
 	@GetMapping("/product")
 	public ResponseEntity<Page<ProductDTO>> fetchAllWithArgs(
 			@RequestParam(name = "name", required = false) Optional<String> name, 
@@ -124,7 +127,7 @@ public class ProductController
 	
 	@ApiOperation(value = "Removes a product", notes = "Removes the product whose ID is passed in the path")
 	@DeleteMapping("/product/{id}")
-	public ResponseEntity<?> remove(@PathVariable Long id)
+	public ResponseEntity<Object> remove(@PathVariable Long id)
 	{
 		return productService.findById(id).map(p -> {
 			productService.delete(p);

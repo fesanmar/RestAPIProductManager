@@ -7,8 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.felipesantacruz.productmanager.dto.product.ProductDTO;
-import com.felipesantacruz.productmanager.dto.product.WriteProductDTO;
+import com.felipesantacruz.productmanager.dto.ProductDTO;
+import com.felipesantacruz.productmanager.dto.WriteProductDTO;
 import com.felipesantacruz.productmanager.model.Category;
 import com.felipesantacruz.productmanager.model.Product;
 import com.felipesantacruz.productmanager.repo.ProductRepository;

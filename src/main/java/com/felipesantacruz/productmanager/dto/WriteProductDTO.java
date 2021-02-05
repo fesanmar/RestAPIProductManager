@@ -1,4 +1,4 @@
-package com.felipesantacruz.productmanager.dto.product;
+package com.felipesantacruz.productmanager.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

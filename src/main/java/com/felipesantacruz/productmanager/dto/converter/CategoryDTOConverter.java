@@ -3,7 +3,7 @@ package com.felipesantacruz.productmanager.dto.converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
-import com.felipesantacruz.productmanager.dto.category.CategoryDTO;
+import com.felipesantacruz.productmanager.dto.CategoryDTO;
 import com.felipesantacruz.productmanager.model.Category;
 
 import lombok.RequiredArgsConstructor;
