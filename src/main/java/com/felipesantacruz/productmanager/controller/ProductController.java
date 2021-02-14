@@ -28,10 +28,12 @@ import com.felipesantacruz.productmanager.dto.WriteProductDTO;
 import com.felipesantacruz.productmanager.dto.validator.WriteProductDTOValidator;
 import com.felipesantacruz.productmanager.dto.view.ProductViews;
 import com.felipesantacruz.productmanager.error.APIError;
+import com.felipesantacruz.productmanager.error.DatabaseConstraintViolationException;
 import com.felipesantacruz.productmanager.error.ProductNotFoundException;
 import com.felipesantacruz.productmanager.error.WriterProductDTONotValidException;
 import com.felipesantacruz.productmanager.model.Product;
 import com.felipesantacruz.productmanager.service.AbstractProductService;
+import com.felipesantacruz.productmanager.service.OrderService;
 import com.felipesantacruz.productmanager.util.pagination.PaginationLinksUtils;
 
 import io.swagger.annotations.ApiOperation;
@@ -46,6 +48,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductController
 {
 	private final AbstractProductService productService;
+	private final OrderService orderService;
 	private final WriteProductDTOValidator writeProductDTOValidator;
 	private final PaginationLinksUtils paginationLinksUtils;
 	
@@ -130,6 +133,8 @@ public class ProductController
 	public ResponseEntity<Object> remove(@PathVariable Long id)
 	{
 		return productService.findById(id).map(p -> {
+			if (orderService.anyOrderContainsProduct(p))
+				throw new DatabaseConstraintViolationException("Can't delete this product some order row are using it.");
 			productService.delete(p);
 			return ResponseEntity.noContent().build();
 		}).orElseThrow(() -> new ProductNotFoundException(id));

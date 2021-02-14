@@ -1,34 +1,53 @@
-insert into category (id, name) values (NEXTVAL('hibernate_sequence'), 'Comida');
-insert into category (id, name) values (NEXTVAL('hibernate_sequence'), 'Bebida');
-insert into category (id, name) values (NEXTVAL('hibernate_sequence'), 'Complementos');
+drop sequence if exists hibernate_sequence;
+create sequence hibernate_sequence start with 1000 increment by 1;
 
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Juice - Orange, Concentrate', 91, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Beef - Ground, Extra Lean, Fresh', 87, 1);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Cheese - Parmesan Grated', 39, 1);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Cups 10oz Trans', 67, 1);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Wine - Beringer Founders Estate', 27, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Bread - Wheat Baguette', 82, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Quail - Eggs, Fresh', 3, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Cheese - Mascarpone', 97, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Mace', 25, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Oil - Shortening - All - Purpose', 63, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Marjoram - Fresh', 60, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Turnip - White', 74, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Pork Salted Bellies', 38, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Longos - Greek Salad', 15, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Amaretto', 85, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Godiva White Chocolate', 97, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Tomatoes - Roma', 61, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Oven Mitt - 13 Inch', 1, 3);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Vermouth - White, Cinzano', 72, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Club Soda - Schweppes, 355 Ml', 38, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Fenngreek Seed', 1, 1);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Dill Weed - Dry', 72, 1);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Pepper - Green', 56, 1);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Bacardi Breezer - Tropical', 35, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Wine - Merlot Vina Carmen', 14, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Sauce - Black Current, Dry Mix', 9, 1);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Crab - Soft Shell', 17, 1);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Jameson Irish Whiskey', 19, 2);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Muffin Chocolate Individual Wrap', 77, 1);
-insert into product (id, name, price, category_id) values (NEXTVAL('hibernate_sequence'), 'Mussels - Frozen', 95, 1);
+
+insert into category (id, name) values (1, 'Comida');
+insert into category (id, name) values (2, 'Bebida');
+insert into category (id, name) values (3, 'Complementos');
+
+insert into product (id, name, price, category_id) values (1, 'Juice - Orange, Concentrate', 91, 2);
+insert into product (id, name, price, category_id) values (2, 'Beef - Ground, Extra Lean, Fresh', 87, 1);
+insert into product (id, name, price, category_id) values (3, 'Cheese - Parmesan Grated', 39, 1);
+insert into product (id, name, price, category_id) values (4, 'Cups 10oz Trans', 67, 1);
+insert into product (id, name, price, category_id) values (5, 'Wine - Beringer Founders Estate', 27, 2);
+insert into product (id, name, price, category_id) values (6, 'Bread - Wheat Baguette', 82, 2);
+insert into product (id, name, price, category_id) values (7, 'Quail - Eggs, Fresh', 3, 2);
+insert into product (id, name, price, category_id) values (8, 'Cheese - Mascarpone', 97, 2);
+insert into product (id, name, price, category_id) values (9, 'Mace', 25, 2);
+insert into product (id, name, price, category_id) values (10, 'Oil - Shortening - All - Purpose', 63, 2);
+insert into product (id, name, price, category_id) values (11, 'Marjoram - Fresh', 60, 2);
+insert into product (id, name, price, category_id) values (12, 'Turnip - White', 74, 2);
+insert into product (id, name, price, category_id) values (13, 'Pork Salted Bellies', 38, 2);
+insert into product (id, name, price, category_id) values (14, 'Longos - Greek Salad', 15, 2);
+insert into product (id, name, price, category_id) values (15, 'Amaretto', 85, 2);
+insert into product (id, name, price, category_id) values (16, 'Godiva White Chocolate', 97, 2);
+insert into product (id, name, price, category_id) values (17, 'Tomatoes - Roma', 61, 2);
+insert into product (id, name, price, category_id) values (18, 'Oven Mitt - 13 Inch', 1, 3);
+insert into product (id, name, price, category_id) values (19, 'Vermouth - White, Cinzano', 72, 2);
+insert into product (id, name, price, category_id) values (20, 'Club Soda - Schweppes, 355 Ml', 38, 2);
+insert into product (id, name, price, category_id) values (21, 'Fenngreek Seed', 1, 1);
+insert into product (id, name, price, category_id) values (22, 'Dill Weed - Dry', 72, 1);
+insert into product (id, name, price, category_id) values (23, 'Pepper - Green', 56, 1);
+insert into product (id, name, price, category_id) values (24, 'Bacardi Breezer - Tropical', 35, 2);
+insert into product (id, name, price, category_id) values (25, 'Wine - Merlot Vina Carmen', 14, 2);
+insert into product (id, name, price, category_id) values (26, 'Sauce - Black Current, Dry Mix', 9, 1);
+insert into product (id, name, price, category_id) values (27, 'Crab - Soft Shell', 17, 1);
+insert into product (id, name, price, category_id) values (28, 'Jameson Irish Whiskey', 19, 2);
+insert into product (id, name, price, category_id) values (29, 'Muffin Chocolate Individual Wrap', 77, 1);
+insert into product (id, name, price, category_id) values (30, 'Mussels - Frozen', 95, 1);
+
+insert into purchase_order (id, customer, date) values (1, 'María López', CURRENT_TIMESTAMP);
+insert into order_row (id, product_id, price, quantity, order_id) values (1, 1, 91, 1, 1);
+insert into order_row (id, product_id, price, quantity, order_id) values (2, 2, 87, 3, 1);
+insert into order_row (id, product_id, price, quantity, order_id) values (3, 29, 77, 2, 1);
+
+
+insert into purchase_order (id, customer, date) values (2, 'Ángel Martínez', CURRENT_TIMESTAMP);
+insert into order_row (id, product_id, price, quantity, order_id) values (4, 19, 72, 3, 2);
+insert into order_row (id, product_id, price, quantity, order_id) values (5, 28, 19, 2, 2);
+
+insert into purchase_order (id, customer, date) values (3, 'Ana Jiménez', CURRENT_TIMESTAMP);
+insert into order_row (id, product_id, price, quantity, order_id) values (6, 9, 25, 1, 3);
+insert into order_row (id, product_id, price, quantity, order_id) values (7, 13, 38, 5, 3);
+insert into order_row (id, product_id, price, quantity, order_id) values (8, 22, 72, 1, 3);
