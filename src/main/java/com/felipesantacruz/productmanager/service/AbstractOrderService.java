@@ -7,10 +7,13 @@ import com.felipesantacruz.productmanager.dto.ReadOrderDTO;
 import com.felipesantacruz.productmanager.model.Order;
 import com.felipesantacruz.productmanager.model.Product;
 import com.felipesantacruz.productmanager.repo.OrderRepository;
+import java.util.Optional;
 
 public abstract class AbstractOrderService extends BaseService<Order, Long, OrderRepository>
 {
 	public abstract boolean anyOrderContainsProduct(Product p);
 	
 	public abstract Page<ReadOrderDTO> findAllAsDto(Pageable p);
+	
+	public abstract Optional<ReadOrderDTO> findByIdAsDto(Long id);
 }
