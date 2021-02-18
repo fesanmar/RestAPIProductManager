@@ -25,7 +25,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.felipesantacruz.productmanager.dto.ProductDTO;
 import com.felipesantacruz.productmanager.dto.WriteProductDTO;
-import com.felipesantacruz.productmanager.dto.validator.WriteProductDTOValidator;
+import com.felipesantacruz.productmanager.dto.validator.DTOValidator;
 import com.felipesantacruz.productmanager.dto.view.ProductViews;
 import com.felipesantacruz.productmanager.error.APIError;
 import com.felipesantacruz.productmanager.error.DatabaseConstraintViolationException;
@@ -49,7 +49,7 @@ public class ProductController
 {
 	private final AbstractProductService productService;
 	private final OrderService orderService;
-	private final WriteProductDTOValidator writeProductDTOValidator;
+	private final DTOValidator<WriteProductDTO> writeProductDTOValidator;
 	private final PaginationLinksUtils paginationLinksUtils;
 	
 	@ApiOperation(value = "Get an all products's list. A filter can be applied wih the queries args name and price", 

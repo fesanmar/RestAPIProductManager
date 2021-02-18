@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-public class WriteProductDTONotNullValidator implements WriteProductDTOValidator
+public class WriteProductDTONotNullValidator implements DTOValidator<WriteProductDTO>
 {
 
 	private final CategoryRespository categoryRepository;

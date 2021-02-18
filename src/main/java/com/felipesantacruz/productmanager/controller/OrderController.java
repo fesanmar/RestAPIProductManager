@@ -18,10 +18,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.felipesantacruz.productmanager.dto.ReadOrderDTO;
 import com.felipesantacruz.productmanager.dto.WriteOrderDto;
+import com.felipesantacruz.productmanager.dto.validator.DTOValidator;
 import com.felipesantacruz.productmanager.dto.view.OrderViews.Dto;
 import com.felipesantacruz.productmanager.dto.view.OrderViews.DtoWithPriceImageCategory;
 import com.felipesantacruz.productmanager.error.OrderNotFoundException;
 import com.felipesantacruz.productmanager.error.ProductNotFoundException;
+import com.felipesantacruz.productmanager.error.WriterOrderDTONotValidException;
 import com.felipesantacruz.productmanager.model.Order;
 import com.felipesantacruz.productmanager.service.OrderService;
 import com.felipesantacruz.productmanager.util.pagination.PaginationLinksUtils;
@@ -36,6 +38,7 @@ public class OrderController
 {
 	private final OrderService orderService;
 	private final PaginationLinksUtils paginationLinksUtils;
+	private final DTOValidator<WriteOrderDto> wirteOrderDtoValidator;
 	
 	@ApiOperation(value = "Get an all orders's list.", notes = "Provides a list with every order ever.")
 	@JsonView(DtoWithPriceImageCategory.class)
@@ -61,8 +64,15 @@ public class OrderController
 	@PostMapping("")
 	public ResponseEntity<Order> create(@RequestBody WriteOrderDto newOrder)
 	{
+		throwBadRequestIfDTOIsNotValid(newOrder);
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(orderService.save(newOrder).orElseThrow(ProductNotFoundException::new));
+	}
+	
+	private void throwBadRequestIfDTOIsNotValid(WriteOrderDto dto)
+	{
+		if (!wirteOrderDtoValidator.isValid(dto))
+			throw new WriterOrderDTONotValidException();
 	}
 }
