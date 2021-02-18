@@ -61,6 +61,7 @@ public class OrderController
 						   .orElseThrow(() -> new OrderNotFoundException(id));
 	}
 	
+	@ApiOperation(value = "Creates a new order", notes = "Creates a new order, stores it, and returns its details")
 	@PostMapping("")
 	public ResponseEntity<Order> create(@RequestBody WriteOrderDto newOrder)
 	{
