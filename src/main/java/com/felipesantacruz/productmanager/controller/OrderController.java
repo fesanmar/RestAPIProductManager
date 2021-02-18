@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.felipesantacruz.productmanager.model.Order;
+import com.felipesantacruz.productmanager.dto.ReadOrderDTO;
 import com.felipesantacruz.productmanager.service.OrderService;
 import com.felipesantacruz.productmanager.util.pagination.PaginationLinksUtils;
 
@@ -26,9 +26,9 @@ public class OrderController
 	private final PaginationLinksUtils paginationLinksUtils;
 	
 	@GetMapping("")
-	public ResponseEntity<Page<Order>> fetchAll(@PageableDefault Pageable pageable, HttpServletRequest request)
+	public ResponseEntity<Page<ReadOrderDTO>> fetchAll(@PageableDefault Pageable pageable, HttpServletRequest request)
 	{
-		Page<Order> orders = orderService.findAll(pageable);
+		Page<ReadOrderDTO> orders = orderService.findAllAsDto(pageable);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
 		return ResponseEntity.ok()
 				.header("link", paginationLinksUtils.createLinkHeader(orders, uriBuilder))
