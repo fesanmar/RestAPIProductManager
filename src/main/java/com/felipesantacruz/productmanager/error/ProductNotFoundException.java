@@ -8,4 +8,9 @@ public class ProductNotFoundException extends ItemNotFoundException
 	{
 		super("product", id);
 	}
+	
+	public ProductNotFoundException()
+	{
+		super("products");
+	}
 }

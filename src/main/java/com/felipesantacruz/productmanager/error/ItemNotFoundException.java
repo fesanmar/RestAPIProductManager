@@ -12,4 +12,9 @@ public class ItemNotFoundException extends RuntimeException
 	{
 		super(String.format("Couldn't find any %s with id: %d ", itemName, id));
 	}
+	
+	public ItemNotFoundException(String itemsName)
+	{
+		super(String.format("Couldn't find some %s ids", itemsName));
+	}
 }

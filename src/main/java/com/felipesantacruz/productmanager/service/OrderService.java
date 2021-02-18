@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.felipesantacruz.productmanager.dto.ReadOrderDTO;
+import com.felipesantacruz.productmanager.dto.WriteOrderDto;
 import com.felipesantacruz.productmanager.dto.converter.OrderDtoConverter;
 import com.felipesantacruz.productmanager.model.Order;
 import com.felipesantacruz.productmanager.model.Product;
@@ -42,6 +43,12 @@ public class OrderService extends AbstractOrderService
 	private Optional<ReadOrderDTO> convertToOptionalDto(Order o)
 	{
 		return Optional.of(orderDtoConverter.convertToDto(o));
+	}
+
+	@Override
+	public Optional<Order> save(WriteOrderDto dto)
+	{
+		return orderDtoConverter.convertFromDto(dto).map(this::save);
 	}
 
 }

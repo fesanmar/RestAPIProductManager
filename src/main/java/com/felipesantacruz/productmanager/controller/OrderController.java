@@ -5,18 +5,24 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.felipesantacruz.productmanager.dto.ReadOrderDTO;
+import com.felipesantacruz.productmanager.dto.WriteOrderDto;
 import com.felipesantacruz.productmanager.dto.view.OrderViews.Dto;
 import com.felipesantacruz.productmanager.dto.view.OrderViews.DtoWithPriceImageCategory;
 import com.felipesantacruz.productmanager.error.OrderNotFoundException;
+import com.felipesantacruz.productmanager.error.ProductNotFoundException;
+import com.felipesantacruz.productmanager.model.Order;
 import com.felipesantacruz.productmanager.service.OrderService;
 import com.felipesantacruz.productmanager.util.pagination.PaginationLinksUtils;
 
@@ -50,5 +56,13 @@ public class OrderController
 	{
 		return orderService.findByIdAsDto(id)
 						   .orElseThrow(() -> new OrderNotFoundException(id));
+	}
+	
+	@PostMapping("")
+	public ResponseEntity<Order> create(@RequestBody WriteOrderDto newOrder)
+	{
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body(orderService.save(newOrder).orElseThrow(ProductNotFoundException::new));
 	}
 }
