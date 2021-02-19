@@ -14,9 +14,9 @@ public class WirteOrderDtoValidator implements DTOValidator<WriteOrderDto>
 	public boolean isValid(WriteOrderDto dto)
 	{
 		return customerIsPresent(dto) && Arrays.stream(dto.getOrderRows())
-												  .map(row -> row.getQuantity() > 0)
-												  .reduce((acc, actual) -> acc && actual)
-												  .orElse(false);
+											   .map(row -> row.getQuantity() > 0)
+											   .reduce((acc, actual) -> acc && actual)
+											   .orElse(false);
 	}
 
 	private boolean customerIsPresent(WriteOrderDto dto)

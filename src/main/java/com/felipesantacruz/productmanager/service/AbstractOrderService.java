@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.felipesantacruz.productmanager.dto.EditOrderDto;
 import com.felipesantacruz.productmanager.dto.ReadOrderDTO;
 import com.felipesantacruz.productmanager.dto.WriteOrderDto;
 import com.felipesantacruz.productmanager.model.Order;
@@ -20,4 +21,7 @@ public abstract class AbstractOrderService extends BaseService<Order, Long, Orde
 	public abstract Optional<ReadOrderDTO> findByIdAsDto(Long id);
 	
 	public abstract Optional<Order> save(WriteOrderDto dto);
+
+	public abstract Optional<Order> edit(Long id, EditOrderDto dto);
+	
 }
