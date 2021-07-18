@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,17 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.felipesantacruz.productmanager.dto.EditOrderDto;
 import com.felipesantacruz.productmanager.dto.ReadOrderDTO;
 import com.felipesantacruz.productmanager.dto.WriteOrderDto;
 import com.felipesantacruz.productmanager.dto.validator.DTOValidator;
 import com.felipesantacruz.productmanager.dto.view.OrderViews.Dto;
 import com.felipesantacruz.productmanager.dto.view.OrderViews.DtoWithPriceImageCategory;
-import com.felipesantacruz.productmanager.error.OrderNotFoundException;
-import com.felipesantacruz.productmanager.error.ProductNotFoundException;
-import com.felipesantacruz.productmanager.error.WriterOrderDTONotValidException;
+import com.felipesantacruz.productmanager.error.APIError;
+import com.felipesantacruz.productmanager.error.exception.OrderNotFoundException;
+import com.felipesantacruz.productmanager.error.exception.ProductNotFoundException;
+import com.felipesantacruz.productmanager.error.exception.WriterOrderDTONotValidException;
 import com.felipesantacruz.productmanager.model.Order;
 import com.felipesantacruz.productmanager.service.OrderService;
+import com.felipesantacruz.productmanager.user.model.UserEntity;
+import com.felipesantacruz.productmanager.user.model.UserRole;
 import com.felipesantacruz.productmanager.util.pagination.PaginationLinksUtils;
 
 import io.swagger.annotations.ApiOperation;
@@ -46,13 +49,23 @@ public class OrderController
 	@ApiOperation(value = "Get an all orders's list.", notes = "Provides a list with every order ever.")
 	@JsonView(DtoWithPriceImageCategory.class)
 	@GetMapping("")
-	public ResponseEntity<Page<ReadOrderDTO>> fetchAll(@PageableDefault Pageable pageable, HttpServletRequest request)
+	public ResponseEntity<Page<ReadOrderDTO>> fetchAll(@PageableDefault Pageable pageable, HttpServletRequest request,
+			@AuthenticationPrincipal UserEntity userEntity)
 	{
-		Page<ReadOrderDTO> orders = orderService.findAllAsDto(pageable);
+		Page<ReadOrderDTO> orders = null;
+		orders = findOrderForAccurateRole(userEntity, pageable);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
 		return ResponseEntity.ok()
 							 .header("link", paginationLinksUtils.createLinkHeader(orders, uriBuilder))
 							 .body(orders);
+	}
+
+	private Page<ReadOrderDTO> findOrderForAccurateRole(UserEntity userEntity, Pageable pageable)
+	{
+		if (userEntity.getRoles().contains(UserRole.ADMIN))
+			return orderService.findAllAsDto(pageable);
+		else
+			return orderService.findAllByCustomer(userEntity, pageable);
 	}
 	
 	@ApiOperation(value = "Get an order by its ID", notes = "Provides every orders's detail by its ID")
@@ -66,27 +79,21 @@ public class OrderController
 	
 	@ApiOperation(value = "Creates a new order", notes = "Creates a new order, stores it, and returns its details")
 	@PostMapping("")
-	public ResponseEntity<Order> create(@RequestBody WriteOrderDto newOrder)
+	public ResponseEntity<Order> create(@RequestBody WriteOrderDto newOrder, @AuthenticationPrincipal UserEntity user)
 	{
 		throwBadRequestIfDTOIsNotValid(newOrder);
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
-				.body(orderService.save(newOrder).orElseThrow(ProductNotFoundException::new));
+				.body(orderService.save(newOrder, user).orElseThrow(ProductNotFoundException::new));
 	}
 	
-	@ApiOperation(value = "Edits an existing order", notes = "Edit the order whose ID is passed in the path")
+	@ApiOperation(value = "Edits an existing order's customer", notes = "Edit the order's customer whose ID is passed in the path")
 	@PutMapping("/{id}")
-	public ResponseEntity<Order> edit(@PathVariable Long id, @RequestBody EditOrderDto newData)
+	public ResponseEntity<Order> edit(@PathVariable Long id, @AuthenticationPrincipal UserEntity user)
 	{
-		throwBadRequestIf(isBlank(newData.getCustomer()));
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
-				.body(orderService.edit(id, newData).orElseThrow(ProductNotFoundException::new));
-	}
-
-	private boolean isBlank(String str)
-	{
-		return str == null || str.isBlank();
+				.body(orderService.edit(id, user).orElseThrow(ProductNotFoundException::new));
 	}
 	
 	private void throwBadRequestIfDTOIsNotValid(WriteOrderDto dto)
@@ -102,13 +109,19 @@ public class OrderController
 	
 	@ApiOperation(value = "Removes an order", notes = "Removes the order whose ID is passed in the path, and all its rows.")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Object> remove(@PathVariable Long id)
+	public ResponseEntity<Object> remove(@PathVariable Long id, @AuthenticationPrincipal UserEntity user)
 	{
-		return orderService.findById(id).map(order ->
+		if (user.getRoles().contains(UserRole.ADMIN))
 		{
-			orderService.delete(order);
-			return ResponseEntity.noContent().build();
-			
-		}).orElseThrow(() -> new OrderNotFoundException(id));
+			return orderService.findById(id).map(order ->
+			{
+				orderService.delete(order);
+				return ResponseEntity.noContent().build();
+				
+			}).orElseThrow(() -> new OrderNotFoundException(id));
+		}
+		else
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+								 .body(new APIError(HttpStatus.UNAUTHORIZED, "Only ADMIN can remove order."));
 	}
 }

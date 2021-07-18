@@ -3,7 +3,7 @@ package com.felipesantacruz.productmanager.service;
 import java.util.Optional;
 
 import com.felipesantacruz.productmanager.dto.CategoryDTO;
-import com.felipesantacruz.productmanager.error.DeleteNotCompleteForConstraintException;
+import com.felipesantacruz.productmanager.error.exception.DeleteNotCompleteForConstraintException;
 import com.felipesantacruz.productmanager.model.Category;
 import com.felipesantacruz.productmanager.repo.CategoryRespository;
 

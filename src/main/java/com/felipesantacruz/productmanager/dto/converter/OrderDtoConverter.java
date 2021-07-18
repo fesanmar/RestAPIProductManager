@@ -13,6 +13,7 @@ import com.felipesantacruz.productmanager.dto.WriteOrderRowDto;
 import com.felipesantacruz.productmanager.model.Order;
 import com.felipesantacruz.productmanager.model.OrderRow;
 import com.felipesantacruz.productmanager.service.ProductService;
+import com.felipesantacruz.productmanager.user.model.UserEntity;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,10 +23,10 @@ public class OrderDtoConverter
 	private final ModelMapper modelMapper;
 	private final ProductService productService;
 	
-	public Optional<Order> convertFromDto(WriteOrderDto dto)
+	public Optional<Order> convertFromDto(WriteOrderDto dto, UserEntity user)
 	{
 		final Order order = Order.builder()
-						   .customer(dto.getCustomer())
+						   .customer(user)
 						   .build();
 		Arrays.stream(dto.getOrderRows())
 			  .map(OrderDtoConverter.this::convertFromDto)
@@ -57,7 +58,7 @@ public class OrderDtoConverter
 		ReadOrderRowDto[] orderRowsDto = getOrderRowsDto(o);
 		return ReadOrderDTO.builder()
 						   .id(o.getId())
-						   .customer(o.getCustomer())
+						   .customer(o.getCustomer().getUsername())
 						   .date(o.getDate())
 						   .rows(orderRowsDto)
 						   .total((float) Arrays.stream(orderRowsDto).mapToDouble(ReadOrderRowDto::getSubTotal).sum())

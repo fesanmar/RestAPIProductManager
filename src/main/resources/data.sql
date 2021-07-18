@@ -37,17 +37,43 @@ insert into product (id, name, price, category_id) values (28, 'Jameson Irish Wh
 insert into product (id, name, price, category_id) values (29, 'Muffin Chocolate Individual Wrap', 77, 1);
 insert into product (id, name, price, category_id) values (30, 'Mussels - Frozen', 95, 1);
 
-insert into purchase_order (id, customer, date) values (1, 'María López', CURRENT_TIMESTAMP);
+-- Contraseña: Admin1
+insert into user_entity (id, full_name, email, username, password, avatar, created_at, last_password_change_at) 
+values (1, 'Admin admin', 'admin@openwebinars.net','admin','$2a$10$vPaqZvZkz6jhb7U7k/V/v.5vprfNdOnh4sxi/qpPRkYTzPmFlI9p2','https://api.adorable.io/avatars/285/admin@openwebinars.net.png',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into user_entity_roles (user_entity_id, roles) values (1,'USER');
+insert into user_entity_roles (user_entity_id, roles) values (1,'ADMIN');
+
+
+-- Contraseña: Marialopez1
+insert into user_entity (id, full_name, email, username, password, avatar, created_at, last_password_change_at) 
+values (2, 'María López', 'maria.lopez@openwebinars.net','marialopez','$2a$10$3i95KIxdl8igcpDby.URMOgwdDR2q9UaSfor2kJJrhAPfNOC/HMSi','https://api.adorable.io/avatars/285/maria.lopez@openwebinars.net.png',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into user_entity_roles (user_entity_id, roles) values (2,'USER');
+
+-- Contraseña: Angelmartinez1
+insert into user_entity (id, full_name, email, username, password, avatar, created_at, last_password_change_at) 
+values (3, 'Ángel Martínez', 'angel.martinez@openwebinars.net','angelmartinez','$2a$10$37IEM6zzuwXqFrotYDtySOKITKfeNWR3NBRqcM7JYWnBDIaq9ByZm','https://api.adorable.io/avatars/285/angel.martinez@openwebinars.net.png',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into user_entity_roles (user_entity_id, roles) values (3,'USER');
+
+-- Contraseña: Anajimenez1
+insert into user_entity (id, full_name, email, username, password, avatar, created_at, last_password_change_at) 
+values (4, 'Ana Jiménez', 'ana.jimenez@openwebinars.net','anajimenez','$2a$10$k0om5gtNBheWX54VzD1E0etCnqC0xChHjfW3lOXaeCpN5ST1vVGYm','https://api.adorable.io/avatars/285/ana.jimenez@openwebinars.net.png',CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into user_entity_roles (user_entity_id, roles) values (4,'USER');
+
+insert into purchase_order (id, user_entity_id, date) values (1, 2, CURRENT_TIMESTAMP);
 insert into order_row (id, product_id, price, quantity, order_id) values (1, 1, 91, 1, 1);
 insert into order_row (id, product_id, price, quantity, order_id) values (2, 2, 87, 3, 1);
 insert into order_row (id, product_id, price, quantity, order_id) values (3, 29, 77, 2, 1);
 
 
-insert into purchase_order (id, customer, date) values (2, 'Ángel Martínez', CURRENT_TIMESTAMP);
+insert into purchase_order (id, user_entity_id, date) values (2, 3, CURRENT_TIMESTAMP);
 insert into order_row (id, product_id, price, quantity, order_id) values (4, 19, 72, 3, 2);
 insert into order_row (id, product_id, price, quantity, order_id) values (5, 28, 19, 2, 2);
 
-insert into purchase_order (id, customer, date) values (3, 'Ana Jiménez', CURRENT_TIMESTAMP);
+insert into purchase_order (id, user_entity_id, date) values (3, 4, CURRENT_TIMESTAMP);
 insert into order_row (id, product_id, price, quantity, order_id) values (6, 9, 25, 1, 3);
 insert into order_row (id, product_id, price, quantity, order_id) values (7, 13, 38, 5, 3);
 insert into order_row (id, product_id, price, quantity, order_id) values (8, 22, 72, 1, 3);

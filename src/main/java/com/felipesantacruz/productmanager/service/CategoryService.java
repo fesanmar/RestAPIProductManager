@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.felipesantacruz.productmanager.dto.CategoryDTO;
 import com.felipesantacruz.productmanager.dto.converter.CategoryDTOConverter;
-import com.felipesantacruz.productmanager.error.DeleteNotCompleteForConstraintException;
+import com.felipesantacruz.productmanager.error.exception.DeleteNotCompleteForConstraintException;
 import com.felipesantacruz.productmanager.model.Category;
 
 import lombok.RequiredArgsConstructor;

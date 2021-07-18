@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.felipesantacruz.productmanager.error.exception.DatabaseConstraintViolationException;
+import com.felipesantacruz.productmanager.error.exception.ItemNotFoundException;
+import com.felipesantacruz.productmanager.error.exception.WriteDataNotValidException;
+
 @RestControllerAdvice
 public class GlobalControllerAdvice extends ResponseEntityExceptionHandler
 {

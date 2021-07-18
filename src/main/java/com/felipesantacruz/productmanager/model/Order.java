@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -16,6 +18,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.felipesantacruz.productmanager.user.model.UserEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +40,9 @@ public class Order
 	@GeneratedValue
 	private Long id;
 
-	private String customer;
+	@ManyToOne
+	@JoinColumn(name = "user_entity_id")
+	private UserEntity customer;
 
 	@CreatedDate
 	private LocalDateTime date;

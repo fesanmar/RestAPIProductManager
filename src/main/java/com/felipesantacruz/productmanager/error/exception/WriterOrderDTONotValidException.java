@@ -1,4 +1,4 @@
-package com.felipesantacruz.productmanager.error;
+package com.felipesantacruz.productmanager.error.exception;
 
 public class WriterOrderDTONotValidException extends WriteDataNotValidException
 {
