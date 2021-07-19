@@ -21,9 +21,8 @@ import lombok.extern.java.Log;
 
 @Log
 @Component
-public class JwtProvider
+public class JwtTokenProvider
 {
-	public static final String TOKEN_HEADER = "Authorization"; 
 	public static final String TOKEN_PREFIX = "Bearer ";
 	public static final String TOKEN_TYPE = "JWT";
 	

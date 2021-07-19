@@ -17,8 +17,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.felipesantacruz.productmanager.security.jwt.JwtAuthorizationFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
+	private static final String API_AUTH_URL = "/api/auth";
 	private static final String USER = "USER";
 	private static final String ADMIN = "ADMIN";
 	private static final String ORDER_URL = "api/order/**";
@@ -36,6 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 	private final AuthenticationEntryPoint jwtAuthEntryPoint;
 	private final UserDetailsService userDetailsService;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtAuthorizationFilter jwtAuthorizationFilter;
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception
@@ -50,10 +53,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 		http.csrf().disable()
 			.exceptionHandling().authenticationEntryPoint(jwtAuthEntryPoint)
 			.and()
-			.addFilterBefore(null, UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 			.authorizeRequests()
+				.antMatchers(
+						POST, API_AUTH_URL.concat("/login"), 
+						API_AUTH_URL.concat("/new")).permitAll()
 				.antMatchers(GET, PRODUCT_URL).hasRole(USER)
 				.antMatchers(POST, PRODUCT_URL).hasRole(ADMIN)
 				.antMatchers(PUT, PRODUCT_URL).hasRole(ADMIN)
@@ -69,6 +75,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 	{
 		return super.authenticationManager();
 	}
-	
-	
 }

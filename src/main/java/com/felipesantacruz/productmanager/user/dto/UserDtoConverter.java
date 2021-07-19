@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.felipesantacruz.productmanager.security.jwt.model.JwtUserResponse;
 import com.felipesantacruz.productmanager.user.model.UserEntity;
 import com.felipesantacruz.productmanager.user.model.UserRole;
 
@@ -32,4 +33,16 @@ public class UserDtoConverter
 				.collect(Collectors.toSet());
 	}
 	
+	
+	public JwtUserResponse toJwtUserResponse(UserEntity userEntity, String jwtToken)
+	{
+		return JwtUserResponse.jwtUserResponseBuilder()
+							  .fullName(userEntity.getFullName())
+							  .email(userEntity.getEmail())
+							  .username(userEntity.getUsername())
+							  .avatar(userEntity.getAvatar())
+							  .roles(userEntity.getRoles().stream().map(UserRole::name).collect(Collectors.toSet()))
+							  .token(jwtToken)
+							  .build();
+	}
 }
