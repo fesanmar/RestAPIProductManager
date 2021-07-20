@@ -1,5 +1,32 @@
-{"properties": [{
-  "name": "upload.root-location",
-  "type": "java.lang.String",
-  "description": "A description for 'upload.root-location'"
-}]}
+{"properties": [
+  {
+    "name": "upload.root-location",
+    "type": "java.lang.String",
+    "description": "A description for 'upload.root-location'"
+  },
+  {
+    "name": "oauth2.client-secret",
+    "type": "java.lang.String",
+    "description": "A description for 'oauth2.client-secret'"
+  },
+  {
+    "name": "oauth2.client-id",
+    "type": "java.lang.String",
+    "description": "A description for 'oauth2.client-id'"
+  },
+  {
+    "name": "oauth2.redirect-uri",
+    "type": "java.lang.String",
+    "description": "A description for 'oauth2.redirect-uri'"
+  },
+  {
+    "name": "oauth2.access-token-validity-seconds",
+    "type": "java.lang.String",
+    "description": "A description for 'oauth2.access-token-validity-seconds'"
+  },
+  {
+    "name": "oauth2.refresh-token-validity-seconds",
+    "type": "java.lang.String",
+    "description": "A description for 'oauth2.refresh-token-validity-seconds'"
+  }
+]}
