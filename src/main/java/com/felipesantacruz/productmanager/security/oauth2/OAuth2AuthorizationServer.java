@@ -1,6 +1,9 @@
 package com.felipesantacruz.productmanager.security.oauth2;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,6 +13,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +32,7 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final UserDetailsService userDetailsService;
+	private final DataSource dataSource;
 	
 	@Value("${oauth2.client-id}")
 	private String clientId;
@@ -56,7 +62,7 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception
 	{
 		clients
-			.inMemory()
+			.jdbc(dataSource)
 			.withClient(clientId)
 			.secret(passwordEncoder.encode(clientSecret))
 			.authorizedGrantTypes(CODE_GRANT_TYPE, IMPLICIT_GRANT_TYPE, PASS_GRANT_TYPE, REFRESH_TOKEN_GRANT_TYPE)
@@ -73,6 +79,13 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
 	{
 		endpoints
 			.authenticationManager(authenticationManager)
-			.userDetailsService(userDetailsService);
+			.userDetailsService(userDetailsService)
+			.tokenStore(tokenStore());
+	}
+	
+	@Bean
+	public TokenStore tokenStore()
+	{
+		return new JdbcTokenStore(dataSource);
 	}
 }
