@@ -13,8 +13,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -80,12 +82,19 @@ public class OAuth2AuthorizationServer extends AuthorizationServerConfigurerAdap
 		endpoints
 			.authenticationManager(authenticationManager)
 			.userDetailsService(userDetailsService)
-			.tokenStore(tokenStore());
+			.tokenStore(tokenStore())
+			.accessTokenConverter(accessTokenConverter());
 	}
 	
 	@Bean
 	public TokenStore tokenStore()
 	{
 		return new JdbcTokenStore(dataSource);
+	}
+	
+	@Bean
+	public AccessTokenConverter accessTokenConverter()
+	{
+		return new JwtAccessTokenConverter();
 	}
 }
